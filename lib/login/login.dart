@@ -28,7 +28,9 @@ class LoginUserState extends State {
     String password = passwordController.text;
 
     // SERVER LOGIN API URL
-    var url = 'http://10.0.2.2/eparkirlogin/login/login_user.php';
+    //var url = 'http://10.0.2.2/eparkirlogin/login/login_user.php';
+    var url = 'http://103.55.37.171/eparkir/login/login_user.php';
+
 
     // Store all data with Param Name.
     var data = {'email': email, 'password': password};
@@ -50,7 +52,7 @@ class LoginUserState extends State {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => HomePage(email: emailController.text)),
+            builder: (context) => new HomePage()),
         //MaterialPageRoute(builder: (context) => ProfileScreen(email : emailController.text))
       );
     } else {

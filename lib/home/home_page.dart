@@ -10,11 +10,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  final String email;
+  //final String email;
 
 // Receiving Email using Constructor.
 
-  const HomePage({Key key, @required this.email}) : super(key: key);
+  //const HomePage({Key? key, required this.email}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -23,7 +23,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   PageController _pageController = PageController();
   List<Widget> _screens = [
-    TambahPage(),
     ParkirPage(),
     ScanPage(),
     KeluarPage(),
@@ -55,12 +54,6 @@ class _HomePageState extends State<HomePage> {
         currentIndex: _selectedIndex,
         backgroundColor: Colors.white,
         items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.post_add,
-            ),
-            label: 'Tambah',
-          ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.local_parking,

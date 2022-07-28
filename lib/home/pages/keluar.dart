@@ -7,7 +7,7 @@ import 'package:e_parkir_02/home/pages/crud/edit.dart';
 import 'package:intl/intl.dart';
 
 class KeluarPage extends StatefulWidget {
-  KeluarPage({Key key}) : super(key: key);
+  KeluarPage({Key? key}) : super(key: key);
 
   @override
   _KeluarPageState createState() => _KeluarPageState();
@@ -28,7 +28,8 @@ class _KeluarPageState extends State<KeluarPage>
       final response = await http.get(Uri.parse(
           //you have to take the ip address of your computer.
           //because using localhost will cause an error
-          'http://10.0.2.2/eparkirlogin/parkir/listselesai.php'));
+          //'http://10.0.2.2/eparkirlogin/parkir/listselesai.php'));
+          'http://103.55.37.171/eparkir/parkir/listselesai.php'));
 
       // if response successful
       if (response.statusCode == 200) {
@@ -55,99 +56,103 @@ class _KeluarPageState extends State<KeluarPage>
         automaticallyImplyLeading: false,
       ),
       body: _get.length != 0
-          ? ListView.builder(
-              itemCount: _get.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //   context,
-                  //   //routing into edit page
-                  //   //we pass the id note
-                  //   MaterialPageRoute(builder: (context) => Edit(id_parkir: _get[index]['id_parkir'],))
-                  //   );
-                  // },
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Column(
-                        children: <Widget>[
-                          // Text('${_get[index]['plat_nomor']}',
-                          // style:
-                          //   TextStyle(fontSize: 15, fontWeight: FontWeight.bold,
-                          //   //color: index % 2 == 0? Colors.white : null,
-                          //   ),
-                          //   ),
-                          // SizedBox(
-                          //   height: 2,
-                          // ),
-                          // Text('${_get[index]['jenis_kendaraan']}',
-                          // style:
-                          //   TextStyle(fontSize: 16,
-                          //   //color: index % 2 == 0? Colors.white : null,
-                          //   ),
-                          // ),
-
-                          ListTile(
-                            title: Text(
-                              '${_get[index]['plat_nomor']}   (${_get[index]['status']})',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Rp. ${_get[index]['biaya']}',
-                              style: TextStyle(
-                                color: Colors.black,
-                              ),
-                            ),
-                            // leading: CircleAvatar(
-                            //   backgroundColor: Colors.green,
-                            //   radius: 30,
-                            //   child: Icon(Icons.local_parking, color: Colors.white,size: 30.0,),
+          ? Scrollbar(
+              child: ListView.builder(
+                itemCount: _get.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    // onTap: () {
+                    //   Navigator.push(
+                    //   context,
+                    //   //routing into edit page
+                    //   //we pass the id note
+                    //   MaterialPageRoute(builder: (context) => Edit(id_parkir: _get[index]['id_parkir'],))
+                    //   );
+                    // },
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Column(
+                          children: <Widget>[
+                            // Text('${_get[index]['plat_nomor']}',
+                            // style:
+                            //   TextStyle(fontSize: 15, fontWeight: FontWeight.bold,
+                            //   //color: index % 2 == 0? Colors.white : null,
+                            //   ),
+                            //   ),
+                            // SizedBox(
+                            //   height: 2,
                             // ),
-                            //Icon(Icons.local_parking, color: Colors.green,size: 30.0,),
-                            //trailing: Icon(Icons.star)),
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 15.0),
-                            trailing: Column(
-                              children: <Widget>[
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                  ),
+                            // Text('${_get[index]['jenis_kendaraan']}',
+                            // style:
+                            //   TextStyle(fontSize: 16,
+                            //   //color: index % 2 == 0? Colors.white : null,
+                            //   ),
+                            // ),
+
+                            ListTile(
+                              title: Text(
+                                '${_get[index]['plat_nomor']}   (${_get[index]['status']})',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                Text(
-                                  '${_get[index]['jam_masuk']} - ${_get[index]['jam_keluar']}',
-                                  style: TextStyle(
-                                    color: Colors.black, 
-                                  ),
-                                  textAlign: TextAlign.end,
+                              ),
+                              subtitle: Text(
+                                'Rp. ${_get[index]['biaya']}',
+                                style: TextStyle(
+                                  color: Colors.black,
                                 ),
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 3,
+                              ),
+                              // leading: CircleAvatar(
+                              //   backgroundColor: Colors.green,
+                              //   radius: 30,
+                              //   child: Icon(Icons.local_parking, color: Colors.white,size: 30.0,),
+                              // ),
+                              //Icon(Icons.local_parking, color: Colors.green,size: 30.0,),
+                              //trailing: Icon(Icons.star)),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 15.0),
+                              trailing: Column(
+                                children: <Widget>[
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '${_get[index]['tgl']}',
-                                  style: TextStyle(
-                                    color: Colors.black,
+                                  Text(
+                                    '${_get[index]['jam_masuk']} - ${_get[index]['jam_keluar']}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.end,
                                   ),
-                                  textAlign: TextAlign.end,
-                                ),
-                                //Icon(Icons.flight_land),
-                              ],
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: 3,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${_get[index]['tgl']}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.end,
+                                  ),
+                                  //Icon(Icons.flight_land),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
+              showTrackOnHover: true,
+              isAlwaysShown: true,
             )
           : Center(
               child: Text(
@@ -159,16 +164,6 @@ class _KeluarPageState extends State<KeluarPage>
                 ),
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-              context,
-              //routing into add page
-              MaterialPageRoute(builder: (context) => Add()));
-        },
-      ),
     );
   }
 

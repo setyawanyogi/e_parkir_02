@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TambahPage extends StatefulWidget {
-  TambahPage({Key key}) : super(key: key);
+  //TambahPage({Key key}) : super(key: key);
 
   @override
   _TambahPageState createState() => _TambahPageState();
