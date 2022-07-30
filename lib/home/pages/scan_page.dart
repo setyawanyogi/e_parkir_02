@@ -3,6 +3,13 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:e_parkir_02/home/home_page.dart';
+import 'package:e_parkir_02/home/pages/parkir_page.dart';
+import 'package:e_parkir_02/home/pages/crud/add.dart';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 
 class ScanPage extends StatefulWidget {
   ScanPage({Key? key}) : super(key: key);
@@ -13,14 +20,25 @@ class ScanPage extends StatefulWidget {
 
 class _ScanPageState extends State<ScanPage>
     with AutomaticKeepAliveClientMixin {
+  BlueThermalPrinter printer = BlueThermalPrinter.instance;
+  List<BluetoothDevice> devices = [];
+  BluetoothDevice? selectedDevice;
   final qrKey = GlobalKey(debugLabel: 'QR');
   Barcode? barcode;
   QRViewController? controller;
 
   @override
+  void initState() {
+    super.initState();
+    //in first time, this method will be executed
+    _getData();
+  }
+
+  @override
   void dispose() {
     controller?.dispose();
     super.dispose();
+    
   }
 
   @override
@@ -33,13 +51,86 @@ class _ScanPageState extends State<ScanPage>
     controller!.resumeCamera();
   }
 
+  Future _getData() async {
+    try {
+      final response = await http.get(Uri.parse(
+          //you have to take the ip address of your computer.
+          //because using localhost will cause an error
+          //get detail data with id
+          //"http://10.0.2.2/eparkirlogin/parkir/detail.php?id_parkir='${barcode!.code}'"));
+          "http://103.55.37.171/eparkir/parkir/detail.php?id_parkir='${barcode!.code}'"));
+
+      // if response successful
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+
+        setState(() {});
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future _onUpdate(context) async {
+    try {
+      return await http.post(
+        //Uri.parse("http://10.0.2.2/eparkirlogin/parkir/update.php"),
+        Uri.parse("http://103.55.37.171/eparkir/parkir/update.php?id_parkir='${barcode!.code}'"),
+        body: {
+          // "id": widget.id,
+          // "title": title.text,
+          // "content": content.text,
+        },
+      ).then((value) {
+        //print message after insert to database
+        //you can improve this message with alert dialog
+        var data = jsonDecode(value.body);
+        print(data["message"]);
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  // title: Text('${data["plat_nomor"]}'),
+                  title: Text(data["plat_nomor"]),
+                  content: Text(data["status"]),
+                ));
+        // printer.connect(selectedDevice!);
+
+        // printer.printNewLine();
+        // printer.printNewLine();
+        // printer.printCustom('E_PARKIR', 3, 1);
+        // printer.printNewLine();
+        // printer.printNewLine();
+        // printer.printCustom(data["plat_nomor"], 2, 1);
+        // printer.printCustom(data["jenis_kendaraan"], 2, 1);
+        // printer.printCustom(data["jam_masuk"], 2, 1);
+        // printer.printCustom(data["jam_keluar"], 2, 1);
+        // printer.printCustom(data["tgl"], 2, 1);
+        // printer.printCustom(data['biaya'], 2, 1);
+        // printer.printCustom(data['status'], 2, 1);
+        // printer.printNewLine();
+        // printer.printNewLine();
+        // printer.printQRcode(data["id_parkir"].toString(), 200, 200, 1);
+        // printer.printNewLine();
+        // printer.printNewLine();
+        // printer.printNewLine();
+
+        // Navigator.of(context)
+        //   .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+        Navigator.push(context,
+            new MaterialPageRoute(builder: (context) => new HomePage()));
+      });
+    } catch (e) {
+      print(e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: Text("Keluar"),
+        title: Text("Scan QR"),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -79,10 +170,11 @@ class _ScanPageState extends State<ScanPage>
   }
 
   Widget buildControlButtons() => Container(
-    padding: EdgeInsets.symmetric(horizontal: 16),
-    decoration: BoxDecoration(borderRadius: BorderRadius.circular(8),
-    ),
-    child: Row(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -91,9 +183,9 @@ class _ScanPageState extends State<ScanPage>
               icon: FutureBuilder<bool?>(
                 future: controller?.getFlashStatus(),
                 builder: (context, snapshot) {
-                  if(snapshot.data != null){
+                  if (snapshot.data != null) {
                     return Icon(
-                      snapshot.data! ? Icons.flash_on : Icons.flash_off);
+                        snapshot.data! ? Icons.flash_on : Icons.flash_off);
                   } else {
                     return Container();
                   }
@@ -108,7 +200,7 @@ class _ScanPageState extends State<ScanPage>
               icon: FutureBuilder(
                 future: controller?.getCameraInfo(),
                 builder: (context, snapshot) {
-                  if(snapshot.data != null){
+                  if (snapshot.data != null) {
                     return Icon(Icons.switch_camera);
                   } else {
                     return Container();
@@ -122,7 +214,7 @@ class _ScanPageState extends State<ScanPage>
             ),
           ],
         ),
-  );
+      );
 
   Widget buildResult() => Container(
         padding: EdgeInsets.all(12),
@@ -131,6 +223,8 @@ class _ScanPageState extends State<ScanPage>
           barcode != null ? 'Result : ${barcode!.code}' : 'Scan a Code!',
           maxLines: 3,
         ),
+        
+        
       );
 
   Widget buildQRView(BuildContext context) => QRView(
@@ -146,10 +240,20 @@ class _ScanPageState extends State<ScanPage>
       );
 
   void onQRViewCreated(QRViewController controller) {
+    _onUpdate(barcode);
     setState(() => this.controller = controller);
-
+      //      setState(() {
+      //   _onUpdate(context);
+      // });
+    
     controller.scannedDataStream
-        .listen((barcode) => setState(() => this.barcode = barcode));
+         .listen((barcode) => setState(() => this.barcode = barcode));
+        //.listen((barcode) => setState(() => _onUpdate));
+    //     .listen((barcode) {
+    //       setState(() {
+    //     _onUpdate;
+    //   });
+    // });
   }
 
   @override

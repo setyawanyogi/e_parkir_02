@@ -51,7 +51,7 @@ class _KeluarPageState extends State<KeluarPage>
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
-        title: Text("Parkir"),
+        title: Text("Selesai"),
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),

@@ -9,7 +9,7 @@ import 'package:e_parkir_02/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:e_parkir_02/home/pages/parkir_page.dart';
-import 'package:e_parkir_02/home/home_page.dart';
+
 
 class Add extends StatefulWidget {
   Add({Key? key}) : super(key: key);
