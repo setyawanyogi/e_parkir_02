@@ -73,11 +73,11 @@ class _ParkirPageState extends State<ParkirPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-
     return Scaffold(
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
         centerTitle: true,
+        backgroundColor: Colors.orange,
         automaticallyImplyLeading: false,
         title: Text("Parkir"),
       ),
@@ -189,7 +189,7 @@ class _ParkirPageState extends State<ParkirPage>
               ),
             ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.orange,
         child: Icon(Icons.add),
         onPressed: () {
           Navigator.push(

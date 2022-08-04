@@ -27,18 +27,24 @@ class _ScanPageState extends State<ScanPage>
   Barcode? barcode;
   QRViewController? controller;
 
+  void getDevices() async {
+    devices = await printer.getBondedDevices();
+    setState(() {});
+  }
+
   @override
   void initState() {
     super.initState();
     //in first time, this method will be executed
     _getData();
+    getDevices();
+    _onUpdate();
   }
 
   @override
   void dispose() {
     controller?.dispose();
     super.dispose();
-    
   }
 
   @override
@@ -71,11 +77,12 @@ class _ScanPageState extends State<ScanPage>
     }
   }
 
-  Future _onUpdate(context) async {
+  Future _onUpdate() async {
     try {
       return await http.post(
         //Uri.parse("http://10.0.2.2/eparkirlogin/parkir/update.php"),
-        Uri.parse("http://103.55.37.171/eparkir/parkir/update.php?id_parkir='${barcode!.code}'"),
+        Uri.parse(
+            "http://103.55.37.171/eparkir/parkir/update.php?id_parkir='${barcode!.code}'"),
         body: {
           // "id": widget.id,
           // "title": title.text,
@@ -86,38 +93,42 @@ class _ScanPageState extends State<ScanPage>
         //you can improve this message with alert dialog
         var data = jsonDecode(value.body);
         print(data["message"]);
-        showDialog(
-            context: context,
-            builder: (BuildContext context) => AlertDialog(
-                  // title: Text('${data["plat_nomor"]}'),
-                  title: Text(data["plat_nomor"]),
-                  content: Text(data["status"]),
-                ));
-        // printer.connect(selectedDevice!);
+        // showDialog(
+        //     context: context,
+        //     builder: (BuildContext context) => AlertDialog(
+        //           // title: Text('${data["plat_nomor"]}'),
+        //           title: Text(data["plat_nomor"]),
+        //           content: Text(data["status"]),
+        //         ));
 
-        // printer.printNewLine();
-        // printer.printNewLine();
-        // printer.printCustom('E_PARKIR', 3, 1);
-        // printer.printNewLine();
-        // printer.printNewLine();
-        // printer.printCustom(data["plat_nomor"], 2, 1);
-        // printer.printCustom(data["jenis_kendaraan"], 2, 1);
-        // printer.printCustom(data["jam_masuk"], 2, 1);
-        // printer.printCustom(data["jam_keluar"], 2, 1);
-        // printer.printCustom(data["tgl"], 2, 1);
-        // printer.printCustom(data['biaya'], 2, 1);
-        // printer.printCustom(data['status'], 2, 1);
-        // printer.printNewLine();
+        printer.connect(selectedDevice!);
+        printer.printNewLine();
+        printer.printNewLine();
+        printer.printCustom('E_PARKIR', 3, 1);
+        printer.printNewLine();
+        printer.printNewLine();
+        printer.printCustom(data["plat_nomor"], 2, 1);
+        printer.printCustom(data["jenis_kendaraan"], 2, 1);
+        printer.printNewLine();
+        printer.print3Column("Datang:", data["jam_masuk"], "", 1);
+        printer.print3Column("Keluar:", data["jam_keluar"], "", 1);
+        printer.print3Column("Tanggal:", data["tgl"], "", 1);
+        printer.print3Column("Status:", data["status"], "", 1);
+        printer.print3Column("Harga:", data["biaya"], "", 1);
+
+        printer.printNewLine();
         // printer.printNewLine();
         // printer.printQRcode(data["id_parkir"].toString(), 200, 200, 1);
-        // printer.printNewLine();
-        // printer.printNewLine();
-        // printer.printNewLine();
+        printer.printNewLine();
+        printer.printNewLine();
+        printer.paperCut();
+        // printer.disconnect();
+
+        Navigator.push(context,
+            new MaterialPageRoute(builder: (context) => new HomePage()));
 
         // Navigator.of(context)
         //   .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new HomePage()));
       });
     } catch (e) {
       print(e);
@@ -131,6 +142,7 @@ class _ScanPageState extends State<ScanPage>
       backgroundColor: Colors.grey.shade300,
       appBar: AppBar(
         title: Text("Scan QR"),
+        backgroundColor: Colors.orange,
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
@@ -138,8 +150,42 @@ class _ScanPageState extends State<ScanPage>
         alignment: Alignment.center,
         children: <Widget>[
           buildQRView(context),
-          Positioned(bottom: 10, child: buildResult()),
+          //Positioned(bottom: 10, child: buildResult()),
           Positioned(top: 10, child: buildControlButtons()),
+          Positioned(
+            bottom: 50,
+            child: Container(
+              padding: EdgeInsets.all(5),
+              decoration: BoxDecoration(color: Colors.white24),
+              child: DropdownButton<BluetoothDevice>(
+                  value: selectedDevice,
+                  hint: const Text('Select Thermal Printer'),
+                  onChanged: (devices) {
+                    setState(() {
+                      selectedDevice = devices;
+                    });
+                  },
+                  items: devices
+                      .map((e) => DropdownMenuItem(
+                            child: Text(e.name!),
+                            value: e,
+                          ))
+                      .toList()),
+            ),
+          ),
+          Positioned(
+              bottom: 10,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                          primary: Colors.orange,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                        ),
+                  onPressed: () {
+                    printer.connect(selectedDevice!);
+                  },
+                  child: const Text('Connect & Print'))),
         ],
       ),
       // body: ListView.builder(
@@ -223,15 +269,13 @@ class _ScanPageState extends State<ScanPage>
           barcode != null ? 'Result : ${barcode!.code}' : 'Scan a Code!',
           maxLines: 3,
         ),
-        
-        
       );
 
   Widget buildQRView(BuildContext context) => QRView(
         key: qrKey,
         onQRViewCreated: onQRViewCreated,
         overlay: QrScannerOverlayShape(
-          borderColor: Colors.blue,
+          borderColor: Colors.orange,
           borderWidth: 10,
           borderRadius: 10,
           borderLength: 20,
@@ -240,20 +284,20 @@ class _ScanPageState extends State<ScanPage>
       );
 
   void onQRViewCreated(QRViewController controller) {
-    _onUpdate(barcode);
     setState(() => this.controller = controller);
-      //      setState(() {
-      //   _onUpdate(context);
-      // });
-    
-    controller.scannedDataStream
-         .listen((barcode) => setState(() => this.barcode = barcode));
-        //.listen((barcode) => setState(() => _onUpdate));
-    //     .listen((barcode) {
-    //       setState(() {
-    //     _onUpdate;
-    //   });
+    //      setState(() {
+    //   _onUpdate(context);
     // });
+
+    controller.scannedDataStream.listen((barcode) {
+      setState(() => this.barcode = barcode);
+      _onUpdate();
+      reassemble();
+      printer.paperCut();
+
+      // Navigator.push(context,
+      //       new MaterialPageRoute(builder: (context) => new HomePage()));
+    });
   }
 
   @override

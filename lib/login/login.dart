@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'package:e_parkir_02/home/home.dart';
 import 'package:e_parkir_02/home/home_page.dart';
+import 'package:e_parkir_02/login/email_provider.dart';
 import 'package:e_parkir_02/home/pages/petugas_page.dart';
 
 class LoginUser extends StatefulWidget {
@@ -17,6 +19,9 @@ class LoginUserState extends State {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+
+  
+
   Future userLogin() async {
     // Showing CircularProgressIndicator.
     setState(() {
@@ -30,7 +35,6 @@ class LoginUserState extends State {
     // SERVER LOGIN API URL
     //var url = 'http://10.0.2.2/eparkirlogin/login/login_user.php';
     var url = 'http://103.55.37.171/eparkir/login/login_user.php';
-
 
     // Store all data with Param Name.
     var data = {'email': email, 'password': password};
@@ -49,10 +53,9 @@ class LoginUserState extends State {
       });
 
       // Navigate to Profile Screen & Sending Email to Next Screen.
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (context) => new HomePage()),
+        MaterialPageRoute(builder: (context) => new HomePage()),
         //MaterialPageRoute(builder: (context) => ProfileScreen(email : emailController.text))
       );
     } else {

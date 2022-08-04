@@ -1,4 +1,6 @@
 import 'package:e_parkir_02/home/pages/keluar.dart';
+import 'package:e_parkir_02/home/pages/selesai.dart';
+import 'package:e_parkir_02/home/pages/parkir.dart';
 import 'package:e_parkir_02/home/pages/parkir_page.dart';
 import 'package:e_parkir_02/home/pages/petugas_page.dart';
 import 'package:e_parkir_02/home/pages/scan_page.dart';
@@ -23,9 +25,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   PageController _pageController = PageController();
   List<Widget> _screens = [
-    ParkirPage(),
+    Parkir(),
     ScanPage(),
-    KeluarPage(),
+    Selesai(),
     PetugasPage()
   ];
   int _selectedIndex = 0;
@@ -41,7 +43,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
+      
       body: PageView(
         controller: _pageController,
         children: _screens,
@@ -51,6 +55,7 @@ class _HomePageState extends State<HomePage> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         onTap: _itemTapped,
+        selectedItemColor: Colors.orange,
         currentIndex: _selectedIndex,
         backgroundColor: Colors.white,
         items: <BottomNavigationBarItem>[

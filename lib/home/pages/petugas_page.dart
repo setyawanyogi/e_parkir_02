@@ -9,15 +9,53 @@ import 'package:e_parkir_02/home/home_page.dart';
 class PetugasPage extends StatelessWidget {
   // User Logout Function.
   logout(BuildContext context) {
-    Navigator.pop(context);
+    Navigator.pushReplacement(context,
+            new MaterialPageRoute(builder: (context) => new LoginUser()));
+    //showAlertDialog(context);
   }
-  
+
+  showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = FlatButton(
+      child: Text("Tidak"),
+      onPressed: () {
+        // Close the dialog
+        Navigator.of(context).pop();
+      },
+    );
+    Widget continueButton = FlatButton(
+      child: Text("Iya"),
+      onPressed: () {
+        Navigator.pushReplacement(context,
+            new MaterialPageRoute(builder: (context) => new LoginUser()));
+        Navigator.of(context).pop();
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("Logout"),
+      content: Text("Apa anda yakin ingin keluar?"),
+      actions: [
+        cancelButton,
+        continueButton,
+      ],
+    );
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(
               title: Text('Petugas'),
+              backgroundColor: Colors.orange,
               centerTitle: true,
               automaticallyImplyLeading: false),
           body: SafeArea(
@@ -78,18 +116,29 @@ class PetugasPage extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-                Card(
-                    margin:
-                        EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-                    elevation: 2.0,
-                    child: Padding(
-                        padding:
-                            EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-                        child: Text(
-                          "Skill Sets",
-                          style: TextStyle(
-                              letterSpacing: 2.0, fontWeight: FontWeight.w300),
-                        ))),
+                // Card(
+                //     margin:
+                //         EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
+                //     elevation: 2.0,
+                //     child: Padding(
+                //         padding:
+                //             EdgeInsets.symmetric(vertical: 12, horizontal: 30),
+                //         child: Text(
+                //           "Skill Sets",
+                //           style: TextStyle(
+                //               letterSpacing: 2.0, fontWeight: FontWeight.w300),
+                //         ))),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      primary: Colors.red,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(1),
+                      ),
+                    ),
+                    onPressed: () {
+                      logout(context);
+                    },
+                    child: const Text('Logout')),
                 SizedBox(
                   height: 15,
                 ),
@@ -105,13 +154,9 @@ class PetugasPage extends StatelessWidget {
                   margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      
-                    ),
+                    child: Row(),
                   ),
                 ),
-               
-                
               ],
             ),
           )),

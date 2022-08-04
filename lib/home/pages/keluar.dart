@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:async';
 import 'package:e_parkir_02/home/pages/crud/add.dart';
 import 'package:e_parkir_02/home/pages/crud/edit.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class KeluarPage extends StatefulWidget {
   KeluarPage({Key? key}) : super(key: key);
@@ -13,9 +15,28 @@ class KeluarPage extends StatefulWidget {
   _KeluarPageState createState() => _KeluarPageState();
 }
 
+class Debouncer {
+  int? milliseconds;
+  VoidCallback? action;
+  Timer? timer;
+
+  run(VoidCallback action) {
+    if (null != timer) {
+      timer!.cancel();
+    }
+    timer = Timer(
+      Duration(milliseconds: Duration.millisecondsPerSecond),
+      action,
+    );
+  }
+}
+
 class _KeluarPageState extends State<KeluarPage>
     with AutomaticKeepAliveClientMixin {
+  final _debouncer = Debouncer();
   List _get = [];
+  
+
   @override
   void initState() {
     super.initState();
@@ -53,6 +74,7 @@ class _KeluarPageState extends State<KeluarPage>
       appBar: AppBar(
         title: Text("Selesai"),
         centerTitle: true,
+        backgroundColor: Colors.orange,
         automaticallyImplyLeading: false,
       ),
       body: _get.length != 0
@@ -69,7 +91,7 @@ class _KeluarPageState extends State<KeluarPage>
                     //   MaterialPageRoute(builder: (context) => Edit(id_parkir: _get[index]['id_parkir'],))
                     //   );
                     // },
-                    child: Card(
+                    child: Card(       
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Column(
@@ -89,7 +111,7 @@ class _KeluarPageState extends State<KeluarPage>
                             //   //color: index % 2 == 0? Colors.white : null,
                             //   ),
                             // ),
-
+                            
                             ListTile(
                               title: Text(
                                 '${_get[index]['plat_nomor']}   (${_get[index]['status']})',
@@ -103,13 +125,6 @@ class _KeluarPageState extends State<KeluarPage>
                                   color: Colors.black,
                                 ),
                               ),
-                              // leading: CircleAvatar(
-                              //   backgroundColor: Colors.green,
-                              //   radius: 30,
-                              //   child: Icon(Icons.local_parking, color: Colors.white,size: 30.0,),
-                              // ),
-                              //Icon(Icons.local_parking, color: Colors.green,size: 30.0,),
-                              //trailing: Icon(Icons.star)),
                               contentPadding:
                                   EdgeInsets.symmetric(horizontal: 15.0),
                               trailing: Column(
@@ -171,3 +186,4 @@ class _KeluarPageState extends State<KeluarPage>
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
+
