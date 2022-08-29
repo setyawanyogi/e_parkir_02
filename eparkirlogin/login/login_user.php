@@ -12,7 +12,7 @@
  
  // Getting Password from JSON $obj array and store into $password.
  $password = $obj['password'];
- 
+
  //Applying User Login query with email and password.
  $loginQuery = "SELECT * FROM users WHERE email = '$email' and password = md5('$password') ";
  

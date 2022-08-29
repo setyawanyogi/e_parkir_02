@@ -6,8 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
 import 'package:e_parkir_02/home/pages/crud/add.dart';
-
-
+import 'package:e_parkir_02/home/pages/crud/detail.dart';
 
 class Selesai extends StatefulWidget {
   Selesai() : super();
@@ -32,8 +31,7 @@ class Debouncer {
   }
 }
 
-class SelesaiState extends State<Selesai> 
-  with AutomaticKeepAliveClientMixin {
+class SelesaiState extends State<Selesai> with AutomaticKeepAliveClientMixin {
   final _debouncer = Debouncer();
 
   List<Subject> ulist = [];
@@ -126,14 +124,22 @@ class SelesaiState extends State<Selesai>
           ),
 
           Expanded(
-                        
+            child: Scrollbar(
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: ClampingScrollPhysics(),
                 padding: EdgeInsets.all(5),
                 itemCount: userLists.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                                context,
+                                //routing into edit page
+                                //we pass the id note
+                                MaterialPageRoute(builder: (context) => Detail(id: userLists[index].id_parkir,)));
+                    },
+                  child: Card(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(
@@ -196,18 +202,16 @@ class SelesaiState extends State<Selesai>
                         ],
                       ),
                     ),
+                  ),
                   );
                 },
-                
               ),
-            
-
+              showTrackOnHover: true,
+              isAlwaysShown: true,
+            ),
           ),
-          
         ],
-        
       ),
-     
     );
   }
 
@@ -220,6 +224,7 @@ class SelesaiState extends State<Selesai>
 //Class For Subject
 class Subject {
   var text;
+  var id_parkir;
   var plat_nomor;
   var jenis_kendaraan;
   var jam_masuk;
@@ -230,6 +235,7 @@ class Subject {
 
   Subject({
     required this.text,
+    required this.id_parkir,
     required this.plat_nomor,
     required this.jenis_kendaraan,
     required this.jam_keluar,
@@ -242,6 +248,7 @@ class Subject {
   factory Subject.fromJson(Map<dynamic, dynamic> json) {
     return Subject(
       text: json['text'],
+      id_parkir: json['id_parkir'],
       plat_nomor: json['plat_nomor'],
       jenis_kendaraan: json['jenis_kendaraan'],
       jam_keluar: json['jam_keluar'],

@@ -8,15 +8,16 @@ import 'package:e_parkir_02/home/pages/tambah_page.dart';
 import 'package:e_parkir_02/login/login.dart';
 import 'package:e_parkir_02/home/home_page.dart';
 import 'package:e_parkir_02/home/home.dart';
+import 'package:e_parkir_02/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  //final String email;
+ 
+   final String id_user;
+   
 
-// Receiving Email using Constructor.
-
-  //const HomePage({Key? key, required this.email}) : super(key: key);
+   const HomePage({Key? key, required this.id_user}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -25,7 +26,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   PageController _pageController = PageController();
   List<Widget> _screens = [
-    Parkir(),
+    Parkir(id_user: id_user,),
     ScanPage(),
     Selesai(),
     PetugasPage()

@@ -1,16 +1,20 @@
 //declare packages
 import 'dart:async';
 import 'dart:convert';
+// export 'dart:js';
+import 'package:e_parkir_02/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/widgets.dart';
 import 'package:e_parkir_02/home/pages/crud/add.dart';
-
-
+import 'package:e_parkir_02/home/pages/crud/detail.dart';
 
 class Parkir extends StatefulWidget {
-  Parkir() : super();
+ final String id_user;
+   
+
+   const Parkir({Key? key, required this.id_user}) : super(key: key);
 
   @override
   ParkirState createState() => ParkirState();
@@ -32,8 +36,7 @@ class Debouncer {
   }
 }
 
-class ParkirState extends State<Parkir> 
-  with AutomaticKeepAliveClientMixin {
+class ParkirState extends State<Parkir> with AutomaticKeepAliveClientMixin {
   final _debouncer = Debouncer();
 
   List<Subject> ulist = [];
@@ -78,7 +81,7 @@ class ParkirState extends State<Parkir>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Parkir"),
+        title: Text("Parkir" + id_user),
         centerTitle: true,
         backgroundColor: Colors.orange,
         automaticallyImplyLeading: false,
@@ -126,90 +129,94 @@ class ParkirState extends State<Parkir>
           ),
 
           Expanded(
-              child: Scrollbar(            
+            child: Scrollbar(
               child: ListView.builder(
                 shrinkWrap: true,
                 physics: ClampingScrollPhysics(),
                 padding: EdgeInsets.all(5),
                 itemCount: userLists.length,
                 itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      side: BorderSide(
-                        color: Colors.grey.shade300,
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                                context,
+                                //routing into edit page
+                                //we pass the id note
+                                MaterialPageRoute(builder: (context) => Detail(id: userLists[index].id_parkir,)));
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        side: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
                       ),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                            title: Text(
-                              '${userLists[index].plat_nomor}   (${userLists[index].status})',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text(
+                                '${userLists[index].plat_nomor}   (${userLists[index].status})',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            subtitle: Text(
-                              'Rp. ${userLists[index].biaya}',
-                              style: TextStyle(
-                                color: Colors.black,
+                              subtitle: Text(
+                                'Rp. ${userLists[index].biaya}',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 15.0),
-                            trailing: Column(
-                              children: <Widget>[
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 10,
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 15.0),
+                              trailing: Column(
+                                children: <Widget>[
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '${userLists[index].jam_masuk} - ${userLists[index].jam_keluar}',
-                                  style: TextStyle(
-                                    color: Colors.black,
+                                  Text(
+                                    '${userLists[index].jam_masuk} - ${userLists[index].jam_keluar}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.end,
                                   ),
-                                  textAlign: TextAlign.end,
-                                ),
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 3,
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: 3,
+                                    ),
                                   ),
-                                ),
-                                Text(
-                                  '${userLists[index].tgl}',
-                                  style: TextStyle(
-                                    color: Colors.black,
+                                  Text(
+                                    '${userLists[index].tgl}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.end,
                                   ),
-                                  textAlign: TextAlign.end,
-                                ),
-                                //Icon(Icons.flight_land),
-                              ],
-                            ),
-                          )
-                        ],
+                                  //Icon(Icons.flight_land),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   );
                 },
-                
               ),
               showTrackOnHover: true,
               isAlwaysShown: true,
             ),
-
           ),
-          
         ],
-        
       ),
-       
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange,
         child: Icon(Icons.add),
@@ -232,6 +239,7 @@ class ParkirState extends State<Parkir>
 //Class For Subject
 class Subject {
   var text;
+  var id_parkir;
   var plat_nomor;
   var jenis_kendaraan;
   var jam_masuk;
@@ -242,6 +250,7 @@ class Subject {
 
   Subject({
     required this.text,
+    required this.id_parkir,
     required this.plat_nomor,
     required this.jenis_kendaraan,
     required this.jam_keluar,
@@ -254,6 +263,7 @@ class Subject {
   factory Subject.fromJson(Map<dynamic, dynamic> json) {
     return Subject(
       text: json['text'],
+      id_parkir: json['id_parkir'],
       plat_nomor: json['plat_nomor'],
       jenis_kendaraan: json['jenis_kendaraan'],
       jam_keluar: json['jam_keluar'],
@@ -264,3 +274,4 @@ class Subject {
     );
   }
 }
+

@@ -4,9 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
 import 'package:e_parkir_02/home/pages/crud/add.dart';
-import 'package:e_parkir_02/home/pages/crud/edit.dart';
+
 import 'package:intl/intl.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 
 class KeluarPage extends StatefulWidget {
   KeluarPage({Key? key}) : super(key: key);

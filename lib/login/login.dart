@@ -34,6 +34,7 @@ class LoginUserState extends State {
 
     // SERVER LOGIN API URL
     //var url = 'http://10.0.2.2/eparkirlogin/login/login_user.php';
+    //var url = 'http://10.0.2.2/eparkirlogin/login/login.php';
     var url = 'http://103.55.37.171/eparkir/login/login_user.php';
 
     // Store all data with Param Name.
@@ -51,13 +52,13 @@ class LoginUserState extends State {
       setState(() {
         visible = false;
       });
-
+    
       // Navigate to Profile Screen & Sending Email to Next Screen.
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => new HomePage()),
-        //MaterialPageRoute(builder: (context) => ProfileScreen(email : emailController.text))
-      );
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(builder: (context) => new HomePage()),
+      //   //MaterialPageRoute(builder: (context) => ProfileScreen(email : emailController.text))
+      // );
     } else {
       // If Email or Password did not Matched.
       // Hiding the CircularProgressIndicator.

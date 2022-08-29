@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:e_parkir_02/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_code_scanner/qr_code_scanner.dart';
@@ -125,7 +126,7 @@ class _ScanPageState extends State<ScanPage>
         // printer.disconnect();
 
         Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new HomePage()));
+            new MaterialPageRoute(builder: (context) => new HomePage(id_user:id_user)));
 
         // Navigator.of(context)
         //   .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);

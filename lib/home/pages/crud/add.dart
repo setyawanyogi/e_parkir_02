@@ -1,14 +1,28 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
+import 'package:async/async.dart';
+import 'package:e_parkir_02/main.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart';
+import 'package:path/path.dart' as path;
 import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:e_parkir_02/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:e_parkir_02/home/pages/parkir_page.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+
+//import 'package:flutter_mobile_vision_2/flutter_mobile_vision_2.dart';
 
 class Add extends StatefulWidget {
-  Add({Key? key}) : super(key: key);
+  // final String id_user;
+   
+
+  //  const Add({Key? key, required this.id_user}) : super(key: key);
+  //Add({Key? key}) : super(key: key);
 
   @override
   State<Add> createState() => _AddState();
@@ -17,6 +31,24 @@ class Add extends StatefulWidget {
 class _AddState extends State<Add> {
   final _formKey = GlobalKey<FormState>();
   List _getlist = [];
+  //image
+  File? _imageFile;
+
+  bool textScanning = false;
+  String scannedText = "";
+
+  //thremal printer
+  List<BluetoothDevice> devices = [];
+  BluetoothDevice? selectedDevice;
+  BlueThermalPrinter printer = BlueThermalPrinter.instance;
+  //inisialize field
+  List _get = [];
+  List<String> items = ['Parkir', 'Selesai'];
+  String? statusValue = 'Parkir';
+  String jenis_kendaraan = '';
+  int? id_kendaraan;
+  var plat_nomor = TextEditingController();
+  var status = TextEditingController();
 
   @override
   void initState() {
@@ -24,6 +56,80 @@ class _AddState extends State<Add> {
     //in first time, this method will be executed
     _getData();
     getDevices();
+    print("iduser : $id_user");
+  }
+
+  _pilihKamera() async {
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.camera, maxHeight: 1920.0, maxWidth: 1080.0);
+    setState(() {
+      _imageFile = image;
+    });
+  }
+
+  _pilihGallery() async {
+    var image = await ImagePicker.pickImage(
+        source: ImageSource.gallery, maxHeight: 1920.0, maxWidth: 1080.0);
+
+    setState(() {
+      _imageFile = image;
+    });
+  }
+
+  void getImage(ImageSource source) async {
+    try {
+      final pickedImage = await ImagePicker.pickImage(source: source);
+      if (pickedImage != null) {
+        textScanning = true;
+        _imageFile = pickedImage;
+
+        setState(() {});
+        getRecognisedText(pickedImage);
+      }
+    } catch (e) {
+      textScanning = false;
+      _imageFile = null;
+      scannedText = "Error occured while scanning";
+      setState(() {});
+    }
+  }
+
+  void getRecognisedText(File image) async {
+    final inputImage = InputImage.fromFilePath(image.path);
+    final textDetector = GoogleMlKit.vision.textDetector();
+    RecognisedText recognisedText = await textDetector.processImage(inputImage);
+    await textDetector.close();
+    scannedText = "";
+
+    //String scannedTextlast = scannedText.substring(0, scannedText.length - 4);
+    // String pattern =
+    //     r"^([a-zA-Z]{1,3})(\d{1,4})([a-zA-Z]{0,3})$";
+    // RegExp regEx = RegExp(pattern);
+
+    for (TextBlock block in recognisedText.blocks) {
+      final String text = block.text;
+      print("block of text: ");
+      print(text);
+      for (TextLine line in block.lines) {
+        final String text = line.text;
+        print("line of text: ");
+        print(text);
+        for (TextElement element in line.elements) {
+          final String text = element.text;
+          print("element of text: ");
+          print(text);
+          //       if (regEx.hasMatch(line.text)) {
+          //       scannedText += line.text + '\n';
+          // }
+          scannedText += element.text + ' ';
+          plat_nomor.text = scannedText;
+
+          //scannedText.substring(0,5);
+        }
+      }
+    }
+    textScanning = false;
+    setState(() {});
   }
 
   Future _getData() async {
@@ -50,77 +156,141 @@ class _AddState extends State<Add> {
 
   Future _onSubmit() async {
     try {
-      return await http.post(
-        //Uri.parse("http://10.0.2.2/eparkirlogin/parkir/create.php"),
-        Uri.parse("http://103.55.37.171/eparkir/parkir/create.php"),
-        body: {
-          "id_kendaraan": id_kendaraan.toString(),
-          "status": statusValue,
-          "plat_nomor": plat_nomor.text,
-          //"status": status.text,
-        },
-      ).then((value) {
-        //print message after insert to database
-        //you can improve this message with alert dialog
-        var data = jsonDecode(value.body);
-        print(data["message"]);
-        Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new HomePage()));
-        // showDialog(context: context,
-        // builder: (BuildContext context) => AlertDialog(
-        //     // title: Text('${data["plat_nomor"]}'),
-        //     title: Text(data["plat_nomor"]),
-        // ));
-        printer.connect(selectedDevice!);
+      var stream =
+          http.ByteStream(DelegatingStream.typed(_imageFile!.openRead()));
+      var lenght = await _imageFile!.length();
+      var uri = Uri.parse("http://103.55.37.171/eparkir/parkir/create.php");
+      //var uri = Uri.parse("http://10.0.2.2/eparkirlogin/parkir/create.php");
+      var request = http.MultipartRequest("POST", uri);
 
-        printer.printNewLine();
-        printer.printNewLine();
-        printer.printCustom('E_PARKIR', 3, 1);
-        printer.printNewLine();
-        printer.printNewLine();
-        printer.printCustom(plat_nomor.text, 2, 1);
-        printer.printCustom(jenis_kendaraan, 2, 1);
-        printer.printNewLine();
-        printer.print3Column("Datang:", data["jam_masuk"], "", 1);
-        printer.print3Column("Keluar:", data["jam_keluar"], "", 1);
-        printer.print3Column("Tanggal:", data["tgl"], "", 1);
-        printer.print3Column("Status:", data["status"], "", 1);
-        printer.print3Column("Harga:", data["biaya"], "", 1);
-        printer.printNewLine();
-        printer.printNewLine();
-        printer.printQRcode(data["id_parkir"].toString(), 200, 200, 1);
-        printer.printNewLine();
-        printer.printNewLine();
-        printer.printNewLine();
+      var multipartFile = new http.MultipartFile("image", stream, lenght,
+          filename: path.basename(_imageFile!.path));
 
-        // Navigator.of(context)
-        //     .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
-      });
+      request.files.add(multipartFile);
+      request.fields['id_kendaraan'] = id_kendaraan.toString();
+      request.fields['status'] = statusValue;
+      request.fields['plat_nomor'] = plat_nomor.text;
+      //request.fields['addedby'] = id_user;
+
+
+      // request.fields['id_kendaraan'] = id_kendaraan.toString();
+      // request.fields['status'] = statusValue;
+      // request.fields['plat_nomor'] = plat_nomor.text;
+      // request.files.add(http.MultipartFile('image', stream, lenght,
+      //     filename: path.basename(_imageFile.path)));
+      var response = await request.send();
+      if (response.statusCode > 2) {
+        print(response.toString());
+        response.stream.transform(utf8.decoder).listen((value) {
+          var data = jsonDecode(value);
+          print(data["message"]);
+          print(data["id_parkir"]);
+          print(data["biaya"]);
+          print(data["plat_nomor"]);
+          print(data["status"]);
+          Navigator.push(context,
+              new MaterialPageRoute(builder: (context) => new HomePage(id_user: id_user)));
+          //print bluetooth
+          // printer.connect(selectedDevice!);
+          // printer.printNewLine();
+          // printer.printNewLine();
+          // printer.printCustom('E_PARKIR', 3, 1);
+          // printer.printNewLine();
+          // printer.printNewLine();
+          // printer.printCustom(plat_nomor.text, 2, 1);
+          // printer.printCustom(jenis_kendaraan, 2, 1);
+          // printer.printNewLine();
+          // printer.print3Column("Datang:", data["jam_masuk"], "", 1);
+          // printer.print3Column("Keluar:", data["jam_keluar"], "", 1);
+          // printer.print3Column("Tanggal:", data["tgl"], "", 1);
+          // printer.print3Column("Status:", data["status"], "", 1);
+          // printer.print3Column("Harga:", data["biaya"], "", 1);
+          // printer.printNewLine();
+          // printer.printNewLine();
+          // printer.printQRcode(data["id_parkir"].toString(), 200, 200, 1);
+          // printer.printNewLine();
+          // printer.printNewLine();
+          // printer.printNewLine();
+        });
+        setState(() {
+          Navigator.pop(context);
+        });
+      } else {
+        print("error");
+      }
     } catch (e) {
-      print(e);
+      debugPrint("Error $e");
     }
   }
 
-  //thremal printer
-  List<BluetoothDevice> devices = [];
-  BluetoothDevice? selectedDevice;
-  BlueThermalPrinter printer = BlueThermalPrinter.instance;
-  // BluePrintPos bluePrintPos = BluePrintPos.instance;
+  // Future _onSubmitText() async {
+  //   var uri = Uri.parse("http://103.55.37.171/eparkir/parkir/create.php");
+  //   var request = http.MultipartRequest("POST", uri);
+  //   try {
+  //     return await http.post(
+  //       //Uri.parse("http://10.0.2.2/eparkirlogin/parkir/create.php"),
+  //       Uri.parse("http://103.55.37.171/eparkir/parkir/create.php"),
+  //       body: {
+  //         "id_kendaraan": id_kendaraan.toString(),
+  //         "status": statusValue,
+  //         "plat_nomor": plat_nomor.text,
+  //         //"image" :
+  //         //"status": status.text,
+  //       },
+  //     ).then((value) {
+  //       //print message after insert to database
+  //       //you can improve this message with alert dialog
+  //       var data = jsonDecode(value.body);
+  //       print(data["message"]);
+  //       Navigator.push(context,
+  //           new MaterialPageRoute(builder: (context) => new HomePage()));
+  //       // showDialog(context: context,
+  //       // builder: (BuildContext context) => AlertDialog(
+  //       //     // title: Text('${data["plat_nomor"]}'),
+  //       //     title: Text(data["plat_nomor"]),
+  //       // ));
+  //       printer.connect(selectedDevice!);
+  //       printer.printNewLine();
+  //       printer.printNewLine();
+  //       printer.printCustom('E_PARKIR', 3, 1);
+  //       printer.printNewLine();
+  //       printer.printNewLine();
+  //       printer.printCustom(plat_nomor.text, 2, 1);
+  //       printer.printCustom(jenis_kendaraan, 2, 1);
+  //       printer.printNewLine();
+  //       printer.print3Column("Datang:", data["jam_masuk"], "", 1);
+  //       printer.print3Column("Keluar:", data["jam_keluar"], "", 1);
+  //       printer.print3Column("Tanggal:", data["tgl"], "", 1);
+  //       printer.print3Column("Status:", data["status"], "", 1);
+  //       printer.print3Column("Harga:", data["biaya"], "", 1);
+  //       printer.printNewLine();
+  //       printer.printNewLine();
+  //       printer.printQRcode(data["id_parkir"].toString(), 200, 200, 1);
+  //       printer.printNewLine();
+  //       printer.printNewLine();
+  //       printer.printNewLine();
+  //       // Navigator.of(context)
+  //       //     .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
+  //     });
+  //   } catch (e) {
+  //     print(e);
+  //   }
+  // }
+
   void getDevices() async {
     devices = await printer.getBondedDevices();
     setState(() {});
   }
 
-  //inisialize field
-  List _get = [];
-  List<String> items = ['Parkir', 'Selesai'];
-  String? statusValue = 'Parkir';
-  String jenis_kendaraan = '';
-  int? id_kendaraan;
-  var plat_nomor = TextEditingController();
-  var status = TextEditingController();
+  //show popup dialog
+
   @override
   Widget build(BuildContext context) {
+    var placeholder = Container(
+      width: double.infinity,
+      height: 150.0,
+      child: Image.asset('././././assets/images/placeholder.jpg'),
+    );
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
@@ -177,6 +347,34 @@ class _AddState extends State<Add> {
                   ),
                   SizedBox(height: 20),
                   Text(
+                    'Foto Plat Nomor',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Container(
+                    width: double.infinity,
+                    height: 150.0,
+                    child: InkWell(
+                      onTap: () {
+                        getImage(ImageSource.camera);
+                      },
+                      onLongPress: () {
+                        getImage(ImageSource.gallery);
+                      },
+                      child: _imageFile == null
+                          ? placeholder
+                          : Image.file(
+                              _imageFile!,
+                              fit: BoxFit.contain,
+                            ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
                     'Plat Nomor',
                     style: TextStyle(
                       color: Colors.black,
@@ -188,8 +386,11 @@ class _AddState extends State<Add> {
                   TextFormField(
                     textCapitalization: TextCapitalization.characters,
                     controller: plat_nomor,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp('[a-zA-Z0-9]'))
+                    ],
                     decoration: InputDecoration(
-                        hintText: "Tulis Plat Nomor",
+                        hintText: "Tap untuk Scan Plat Nomor",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(15.0),
                         ),
@@ -206,6 +407,14 @@ class _AddState extends State<Add> {
                       return null;
                     },
                   ),
+                  // Text(
+                  //   scannedText,
+                  //   style: TextStyle(
+                  //     color: Colors.black,
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
                   SizedBox(height: 20),
                   Text(
                     'Status',
@@ -247,12 +456,10 @@ class _AddState extends State<Add> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       ElevatedButton(
-                        
                           style: ElevatedButton.styleFrom(
                             primary: Colors.orange,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(15),
-                              
                             ),
                           ),
                           onPressed: () {
@@ -267,7 +474,6 @@ class _AddState extends State<Add> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                         ),
-                        
                         child: Text(
                           "Submit & Print",
                           style: TextStyle(color: Colors.white),

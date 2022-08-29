@@ -1,10 +1,12 @@
+import 'package:e_parkir_02/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:e_parkir_02/home/pages/crud/add.dart';
-import 'package:e_parkir_02/home/pages/crud/edit.dart';
+import 'package:e_parkir_02/home/pages/crud/detail.dart';
+
 import 'package:intl/intl.dart';
 
 class ParkirPage extends StatefulWidget {
@@ -54,7 +56,7 @@ class _ParkirPageState extends State<ParkirPage>
           //you have to take the ip address of your computer.
           //because using localhost will cause an error
           //'http://10.0.2.2/eparkirlogin/parkir/list.php'));
-            'http://103.55.37.171/eparkir/parkir/list.php'));
+          'http://103.55.37.171/eparkir/parkir/list.php'));
 
       // if response successful
       if (response.statusCode == 200) {
@@ -92,7 +94,7 @@ class _ParkirPageState extends State<ParkirPage>
                     //   context,
                     //   //routing into edit page
                     //   //we pass the id note
-                    //   MaterialPageRoute(builder: (context) => Edit(id_parkir: _get[index]['id_parkir'],))
+                    //   MaterialPageRoute(builder: (context) => Detail(id_parkir: _get[index]['id_parkir'],))
                     //   );
                     // },
                     child: Card(
