@@ -34,7 +34,6 @@ class _KeluarPageState extends State<KeluarPage>
     with AutomaticKeepAliveClientMixin {
   final _debouncer = Debouncer();
   List _get = [];
-  
 
   @override
   void initState() {
@@ -90,7 +89,7 @@ class _KeluarPageState extends State<KeluarPage>
                     //   MaterialPageRoute(builder: (context) => Edit(id_parkir: _get[index]['id_parkir'],))
                     //   );
                     // },
-                    child: Card(       
+                    child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),
                         child: Column(
@@ -110,7 +109,7 @@ class _KeluarPageState extends State<KeluarPage>
                             //   //color: index % 2 == 0? Colors.white : null,
                             //   ),
                             // ),
-                            
+
                             ListTile(
                               title: Text(
                                 '${_get[index]['plat_nomor']}   (${_get[index]['status']})',
@@ -185,4 +184,3 @@ class _KeluarPageState extends State<KeluarPage>
   // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }
-

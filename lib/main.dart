@@ -12,24 +12,19 @@ void main() => runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
     ));
 
-String id_user = '';
+// String id_user = '';
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primaryColor: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       //home: Scaffold(body: Center(child: LoginUser())),
       home: Scaffold(body: Center(child: testlogin())),
-      //   routes: <String, WidgetBuilder>{
-      //   '/home/HomePage': (BuildContext context) => new HomePage(
-      //         id_user: id_user,
-      //       ),
-
-      // },
     );
   }
 }

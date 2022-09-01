@@ -53,9 +53,6 @@ class _DetailState extends State<Detail> {
           print(image.text);
 
           print(images);
-          //_images = data;
-
-          //content = TextEditingController(text: data['content']);
         });
       }
     } catch (e) {
@@ -78,23 +75,13 @@ class _DetailState extends State<Detail> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              
               SizedBox(height: 5),
-              
               SizedBox(height: 20),
-              // Image(
-              //   image: NetworkImage(
-              //     'http://103.55.37.171/eparkir/parkir/images/$images',
-              //   ),
-              //   //image: NetworkImage('http://10.0.2.2/eparkirlogin/parkir/images/3019368972.jpg'),
-              //   fit: BoxFit.cover,
-              // ),
               CachedNetworkImage(
                 imageUrl: 'http://103.55.37.171/eparkir/parkir/images/$images',
                 //imageUrl: 'http://10.0.2.2/eparkirlogin/parkir/images/3019368972.jpg',
                 placeholder: (context, url) => new CircularProgressIndicator(),
                 errorWidget: (context, url, error) => new Icon(Icons.error),
-                
               ),
             ],
           ),

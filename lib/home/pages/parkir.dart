@@ -11,10 +11,9 @@ import 'package:e_parkir_02/home/pages/crud/add.dart';
 import 'package:e_parkir_02/home/pages/crud/detail.dart';
 
 class Parkir extends StatefulWidget {
- final String id_user;
-   
+//  final String id_user;
 
-   const Parkir({Key? key, required this.id_user}) : super(key: key);
+//    const Parkir({Key? key, required this.id_user}) : super(key: key);
 
   @override
   ParkirState createState() => ParkirState();
@@ -81,7 +80,7 @@ class ParkirState extends State<Parkir> with AutomaticKeepAliveClientMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Parkir" + id_user),
+        title: Text("Parkir"),
         centerTitle: true,
         backgroundColor: Colors.orange,
         automaticallyImplyLeading: false,
@@ -139,10 +138,13 @@ class ParkirState extends State<Parkir> with AutomaticKeepAliveClientMixin {
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
-                                context,
-                                //routing into edit page
-                                //we pass the id note
-                                MaterialPageRoute(builder: (context) => Detail(id: userLists[index].id_parkir,)));
+                          context,
+                          //routing into edit page
+                          //we pass the id note
+                          MaterialPageRoute(
+                              builder: (context) => Detail(
+                                    id: userLists[index].id_parkir,
+                                  )));
                     },
                     child: Card(
                       shape: RoundedRectangleBorder(
@@ -274,4 +276,3 @@ class Subject {
     );
   }
 }
-

@@ -105,7 +105,7 @@ class _ScanPageState extends State<ScanPage>
         printer.connect(selectedDevice!);
         printer.printNewLine();
         printer.printNewLine();
-        printer.printCustom('E_PARKIR', 3, 1);
+        printer.printCustom('E-PARKIR', 3, 1);
         printer.printNewLine();
         printer.printNewLine();
         printer.printCustom(data["plat_nomor"], 2, 1);
@@ -126,7 +126,7 @@ class _ScanPageState extends State<ScanPage>
         // printer.disconnect();
 
         Navigator.push(context,
-            new MaterialPageRoute(builder: (context) => new HomePage(id_user:id_user)));
+            new MaterialPageRoute(builder: (context) => new HomePage()));
 
         // Navigator.of(context)
         //   .pushNamedAndRemoveUntil('/', (Route<dynamic> route) => false);
@@ -177,12 +177,12 @@ class _ScanPageState extends State<ScanPage>
           Positioned(
               bottom: 10,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                          primary: Colors.orange,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
+                  style: ElevatedButton.styleFrom(
+                    primary: Colors.orange,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                  ),
                   onPressed: () {
                     printer.connect(selectedDevice!);
                   },

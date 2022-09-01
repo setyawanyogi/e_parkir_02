@@ -1,14 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:e_parkir_02/home/home.dart';
 import 'package:e_parkir_02/home/home_page.dart';
-
-
+import 'package:shared_preferences/shared_preferences.dart';
 
 class testlogin extends StatefulWidget {
-  testlogin({Key? key, required this.title}) : super(key: key);
-  final String title;
+  // testlogin({Key? key, required this.title}) : super(key: key);
+  // final String title;
 
   @override
   _testloginState createState() => _testloginState();
@@ -25,7 +26,7 @@ class _testloginState extends State<testlogin> {
   Future userLogin() async {
     //Login API URL
     //use your local IP address instead of localhost or use Web API
-    //String url = "http://192.168.43.215/login_api/user_login.php";
+    //String url = "http://10.0.2.2/eparkirlogin/login/login.php";
     String url = "http://103.55.37.171/eparkir/login/login.php";
 
     // Showing LinearProgressIndicator.
@@ -41,6 +42,7 @@ class _testloginState extends State<testlogin> {
 
     //Starting Web API Call.
     var response = await http.post(url, body: json.encode(data));
+
     if (response.statusCode == 200) {
       //Server response into variable
       print(response.body);
@@ -48,14 +50,18 @@ class _testloginState extends State<testlogin> {
 
       //Check Login Status
       if (msg['loginStatus'] == true) {
+        var idu = msg['userInfo']['id'];
+        print('iduser:$idu');
         setState(() {
           //hide progress indicator
+          iduser(int.parse(idu));
+
           _visible = false;
         });
 
         // Navigate to Home Screen
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => HomePage(id_user:msg['userInfo']['id'])));
+            context, MaterialPageRoute(builder: (context) => HomePage()));
       } else {
         setState(() {
           //hide progress indicator
@@ -76,7 +82,28 @@ class _testloginState extends State<testlogin> {
     }
   }
 
-  Future<dynamic> ?showMessage(String _msg) {
+  iduser(int a) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      //print();
+    });
+    prefs.setInt('iduser', a);
+  }
+
+  Future<void> _iduser() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      print(pid);
+    });
+    prefs.setInt('iduser', pid);
+  }
+
+  hapusSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove('iduser');
+  }
+
+  Future<dynamic>? showMessage(String _msg) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -99,182 +126,124 @@ class _testloginState extends State<testlogin> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Scaffold(
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Visibility(
-              visible: _visible,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 10.0),
-                child: LinearProgressIndicator(),
-              ),
-            ),
-            Container(
-              height: 100.0,
-            ),
-            Icon(
-              Icons.group,
-              color: Theme.of(context).primaryColor,
-              size: 80.0,
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            Text(
-              'Login Here',
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage('assets/images/login.png'), fit: BoxFit.cover),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Stack(children: [
+          Container(
+            padding: const EdgeInsets.only(left: 35, top: 110),
+            child: const Text(
+              "E-Parkir",
               style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                  fontSize: 25.0,
+                  color: Colors.white,
+                  fontSize: 40,
                   fontWeight: FontWeight.bold),
             ),
-            SizedBox(
-              height: 40.0,
-            ),
-            Form(
-              key: _formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
+          ),
+          SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.only(
+                  right: 35,
+                  left: 35,
+                  top: MediaQuery.of(context).size.height * 0.5),
+              child: Column(children: [
+                TextField(
+                  controller: userController,
+                  decoration: InputDecoration(
+                    fillColor: Colors.grey.shade100,
+                    filled: true,
+                    hintText: 'Email',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                TextField(
+                  obscureText: true,
+                  controller: pwdController,
+                  autocorrect: true,
+                  decoration: InputDecoration(
+                    fillColor: Colors.grey.shade100,
+                    filled: true,
+                    hintText: 'Password',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 65,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Theme(
-                      data: new ThemeData(
-                        primaryColor: Color.fromRGBO(84, 87, 90, 0.5),
-                        primaryColorDark: Color.fromRGBO(84, 87, 90, 0.5),
-                        hintColor:
-                            Color.fromRGBO(84, 87, 90, 0.5), //placeholder color
-                      ),
-                      child: TextFormField(
-                        controller: userController,
-                        decoration: InputDecoration(
-                          focusedBorder: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(84, 87, 90, 0.5),
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          enabledBorder: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(84, 87, 90, 0.5),
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          errorBorder: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          labelText: 'Enter User Name',
-                          prefixIcon: const Icon(
-                            Icons.person,
-                            color: Color.fromRGBO(84, 87, 90, 0.5),
-                          ),
-                          border: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(84, 87, 90, 0.5),
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          hintText: 'User Name',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter User Name';
-                          }
-                          return null;
-                        },
+                    const Text(
+                      'Sign In',
+                      style: TextStyle(
+                        color: Color(0xff4c505b),
+                        fontSize: 27,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Theme(
-                      data: new ThemeData(
-                        primaryColor: Color.fromRGBO(84, 87, 90, 0.5),
-                        primaryColorDark: Color.fromRGBO(84, 87, 90, 0.5),
-                        hintColor:
-                            Color.fromRGBO(84, 87, 90, 0.5), //placeholder color
-                      ),
-                      child: TextFormField(
-                        controller: pwdController,
-                        obscureText: true,
-                        decoration: InputDecoration(
-                          focusedBorder: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(84, 87, 90, 0.5),
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          enabledBorder: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(84, 87, 90, 0.5),
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          errorBorder: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.red,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          border: new OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color.fromRGBO(84, 87, 90, 0.5),
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          labelText: 'Enter Password',
-                          prefixIcon: const Icon(
-                            Icons.lock,
-                            color: Color.fromRGBO(84, 87, 90, 0.5),
-                          ),
-                          hintText: 'Password',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please Enter Password';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      height: 20.0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        onPressed: () => {
-                          // Validate returns true if the form is valid, or false otherwise.
-                          if (_formKey.currentState!.validate()) {userLogin()}
-                        },
-                        child: Padding(
-                          padding: EdgeInsets.all(16.0),
-                          child: Text(
-                            'Submit',
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                        ),
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              Theme.of(context).primaryColor),
-                        ),
+                    Visibility(
+                        visible: _visible,
+                        child: Container(
+                            margin: EdgeInsets.only(bottom: 30),
+                            child: CircularProgressIndicator())),
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: const Color(0xff4c505b),
+                      child: IconButton(
+                        color: Colors.white,
+                        onPressed: userLogin,
+                        icon: const Icon(Icons.arrow_forward),
                       ),
                     ),
                   ],
                 ),
-              ),
+                const SizedBox(
+                  height: 40,
+                ),
+                // Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       TextButton(
+                //         onPressed: () {
+                //           Navigator.pushNamed(context, 'register');
+                //         },
+                //         child: const Text(
+                //           'Sign Up',
+                //           style: TextStyle(
+                //             decoration: TextDecoration.underline,
+                //             fontSize: 18,
+                //             color: Color(0xff4c505b),
+                //           ),
+                //         ),
+                //       ),
+                //       TextButton(
+                //         onPressed: () {},
+                //         child: const Text(
+                //           'Forgot Password',
+                //           style: TextStyle(
+                //             decoration: TextDecoration.underline,
+                //             fontSize: 18,
+                //             color: Color(0xff4c505b),
+                //           ),
+                //         ),
+                //       ),
+                //     ]),
+              ]),
             ),
-          ],
-        ),
+          ),
+        ]),
       ),
-    ));
+    );
   }
 }

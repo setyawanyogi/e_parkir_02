@@ -134,75 +134,78 @@ class SelesaiState extends State<Selesai> with AutomaticKeepAliveClientMixin {
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
-                                context,
-                                //routing into edit page
-                                //we pass the id note
-                                MaterialPageRoute(builder: (context) => Detail(id: userLists[index].id_parkir,)));
+                          context,
+                          //routing into edit page
+                          //we pass the id note
+                          MaterialPageRoute(
+                              builder: (context) => Detail(
+                                    id: userLists[index].id_parkir,
+                                  )));
                     },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                      side: BorderSide(
-                        color: Colors.grey.shade300,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(5),
+                        side: BorderSide(
+                          color: Colors.grey.shade300,
+                        ),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(5.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text(
+                                '${userLists[index].plat_nomor}   (${userLists[index].status})',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(
+                                'Rp. ${userLists[index].biaya}',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                              contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 15.0),
+                              trailing: Column(
+                                children: <Widget>[
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${userLists[index].jam_masuk} - ${userLists[index].jam_keluar}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.end,
+                                  ),
+                                  Text(
+                                    '',
+                                    style: TextStyle(
+                                      fontSize: 3,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${userLists[index].tgl}',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                    ),
+                                    textAlign: TextAlign.end,
+                                  ),
+                                  //Icon(Icons.flight_land),
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ),
-                    child: Padding(
-                      padding: EdgeInsets.all(5.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          ListTile(
-                            title: Text(
-                              '${userLists[index].plat_nomor}   (${userLists[index].status})',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Rp. ${userLists[index].biaya}',
-                              style: TextStyle(
-                                color: Colors.black,
-                              ),
-                            ),
-                            contentPadding:
-                                EdgeInsets.symmetric(horizontal: 15.0),
-                            trailing: Column(
-                              children: <Widget>[
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                  ),
-                                ),
-                                Text(
-                                  '${userLists[index].jam_masuk} - ${userLists[index].jam_keluar}',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.end,
-                                ),
-                                Text(
-                                  '',
-                                  style: TextStyle(
-                                    fontSize: 3,
-                                  ),
-                                ),
-                                Text(
-                                  '${userLists[index].tgl}',
-                                  style: TextStyle(
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.end,
-                                ),
-                                //Icon(Icons.flight_land),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
                   );
                 },
               ),

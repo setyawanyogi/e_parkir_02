@@ -31,11 +31,13 @@ class LoginUserState extends State {
     // Getting value from Controller
     String email = emailController.text;
     String password = passwordController.text;
+    
+    
 
     // SERVER LOGIN API URL
-    //var url = 'http://10.0.2.2/eparkirlogin/login/login_user.php';
+    var url = 'http://10.0.2.2/eparkirlogin/login/login_user.php';
     //var url = 'http://10.0.2.2/eparkirlogin/login/login.php';
-    var url = 'http://103.55.37.171/eparkir/login/login_user.php';
+    //var url = 'http://103.55.37.171/eparkir/login/login_user.php';
 
     // Store all data with Param Name.
     var data = {'email': email, 'password': password};
@@ -45,20 +47,23 @@ class LoginUserState extends State {
 
     // Getting Server response into variable.
     var message = jsonDecode(response.body);
-
+    // print(message['id']);
     // If the Response Message is Matched.
     if (message == 'Login Matched') {
+      print(message);
+      // print(message['id']); 
+      // print(message['email']);  
       // Hiding the CircularProgressIndicator.
       setState(() {
-        visible = false;
+        visible = true;
       });
     
       // Navigate to Profile Screen & Sending Email to Next Screen.
-      // Navigator.pushReplacement(
-      //   context,
-      //   MaterialPageRoute(builder: (context) => new HomePage()),
-      //   //MaterialPageRoute(builder: (context) => ProfileScreen(email : emailController.text))
-      // );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => new HomePage()),
+        //MaterialPageRoute(builder: (context) => ProfileScreen(email : emailController.text))
+      );
     } else {
       // If Email or Password did not Matched.
       // Hiding the CircularProgressIndicator.

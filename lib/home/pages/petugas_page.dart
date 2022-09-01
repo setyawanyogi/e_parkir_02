@@ -1,19 +1,64 @@
+import 'package:e_parkir_02/login/testlogin.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:e_parkir_02/login/login.dart';
-import 'package:e_parkir_02/login/login.dart' as login;
+import 'package:e_parkir_02/login/testlogin.dart';
 import 'package:e_parkir_02/home/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+class PetugasPage extends StatefulWidget {
+  State<PetugasPage> createState() => _PetugasPage();
 
-class PetugasPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
+}
+
+class _PetugasPage extends State<PetugasPage> {
+  final _formKey = GlobalKey<FormState>();
+
+  //inisialize field
+
+  int? id_user;
+
+  @override
+  void initState() {
+    super.initState();
+    //in first time, this method will be executed
+
+    _loadid();
+  }
+
+  Future<List<dynamic>> _fecthDataUsers() async {
+    var result = await http
+        //.get("http://10.0.2.2/eparkirlogin/login/userlist.php?id='$id_user'");
+        .get("http://103.55.37.171/eparkir/login/userlist.php?id='$id_user'");
+    return json.decode(result.body)['users'];
+  }
+
+  Future<void> _loadid() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      id_user = (prefs.getInt('iduser') ?? 0);
+    });
+  }
+
   // User Logout Function.
   logout(BuildContext context) {
-    Navigator.pushReplacement(context,
-            new MaterialPageRoute(builder: (context) => new LoginUser()));
+    Navigator.pushReplacement(
+        context, new MaterialPageRoute(builder: (context) => new testlogin()));
     //showAlertDialog(context);
+  }
+
+  removeValues() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //Remove String
+    await prefs.clear();
   }
 
   showAlertDialog(BuildContext context) {
@@ -28,8 +73,9 @@ class PetugasPage extends StatelessWidget {
     Widget continueButton = FlatButton(
       child: Text("Iya"),
       onPressed: () {
+        removeValues();
         Navigator.pushReplacement(context,
-            new MaterialPageRoute(builder: (context) => new LoginUser()));
+            new MaterialPageRoute(builder: (context) => new testlogin()));
         Navigator.of(context).pop();
       },
     );
@@ -55,113 +101,85 @@ class PetugasPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-              title: Text('Petugas'),
-              backgroundColor: Colors.orange,
-              centerTitle: true,
-              automaticallyImplyLeading: false),
-          body: SafeArea(
-            child: Column(
-              children: [
-                // Container(
-                //   decoration: BoxDecoration(
-                //        image: DecorationImage(
-                //            image: NetworkImage("add you image URL here "),
-                //            fit: BoxFit.cover)
-                //           ),
-                //   child: Container(
-                //     width: double.infinity,
-                //     height: 200,
-                //     child: Container(
-                //       alignment: Alignment(0.0, 2.5),
-                //       child: CircleAvatar(
-                //          backgroundImage:
-                //              NetworkImage(""),
-                //          radius: 60.0,
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                SizedBox(
-                  height: 60,
-                ),
-                Text(
-                  "Rajat Palankar",
-                  style: TextStyle(
-                      fontSize: 25.0,
-                      color: Colors.blueGrey,
-                      letterSpacing: 2.0,
-                      fontWeight: FontWeight.w400),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "Belgaum, India",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black45,
-                      letterSpacing: 2.0,
-                      fontWeight: FontWeight.w300),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  "App Developer at XYZ Company",
-                  style: TextStyle(
-                      fontSize: 15.0,
-                      color: Colors.black45,
-                      letterSpacing: 2.0,
-                      fontWeight: FontWeight.w300),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                // Card(
-                //     margin:
-                //         EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-                //     elevation: 2.0,
-                //     child: Padding(
-                //         padding:
-                //             EdgeInsets.symmetric(vertical: 12, horizontal: 30),
-                //         child: Text(
-                //           "Skill Sets",
-                //           style: TextStyle(
-                //               letterSpacing: 2.0, fontWeight: FontWeight.w300),
-                //         ))),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(1),
-                      ),
-                    ),
-                    onPressed: () {
-                      logout(context);
-                    },
-                    child: const Text('Logout')),
-                SizedBox(
-                  height: 15,
-                ),
-                Text(
-                  "App Developer || Digital Marketer",
-                  style: TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black45,
-                      letterSpacing: 2.0,
-                      fontWeight: FontWeight.w300),
-                ),
-                Container(
-                  margin: EdgeInsets.symmetric(horizontal: 20.0, vertical: 8.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(),
-                  ),
-                ),
-              ],
-            ),
-          )),
+        appBar: AppBar(
+            title: Text('Petugas'),
+            backgroundColor: Colors.orange,
+            centerTitle: true,
+            automaticallyImplyLeading: false),
+        body: Container(
+          child: FutureBuilder<List<dynamic>>(
+            future: _fecthDataUsers(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.hasData) {
+                return ListView.builder(
+                    padding: EdgeInsets.all(50),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 150,
+                          ),
+                          Text(
+                            snapshot.data[index]['nama'],
+                            //"$id_user",
+                            style: TextStyle(
+                                fontSize: 30.0,
+                                color: Colors.black,
+                                letterSpacing: 2.0,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            snapshot.data[index]['email'],
+                            style: TextStyle(
+                                fontSize: 20.0,
+                                color: Colors.black,
+                                letterSpacing: 2.0,
+                                fontWeight: FontWeight.w300),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                primary: Colors.red,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(1),
+                                ),
+                              ),
+                              onPressed: () {
+                                logout(context);
+                              },
+                              child: const Text('Logout')),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 8.0),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Row(),
+                            ),
+                          ),
+                        ],
+                      );
+                    });
+              } else {
+                return Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+        ),
+      ),
     );
   }
 }

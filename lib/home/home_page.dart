@@ -13,11 +13,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
- 
-   final String id_user;
-   
+  //  final String id_user;
 
-   const HomePage({Key? key, required this.id_user}) : super(key: key);
+  //  const HomePage({Key? key, required this.id_user}) : super(key: key);
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -25,12 +23,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   PageController _pageController = PageController();
-  List<Widget> _screens = [
-    Parkir(id_user: id_user,),
-    ScanPage(),
-    Selesai(),
-    PetugasPage()
-  ];
+  List<Widget> _screens = [Parkir(), ScanPage(), Selesai(), PetugasPage()];
   int _selectedIndex = 0;
   void _onPageChanged(int index) {
     setState(() {
@@ -44,9 +37,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      
       body: PageView(
         controller: _pageController,
         children: _screens,
